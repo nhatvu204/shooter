@@ -50,6 +50,8 @@ jump_fx = pygame.mixer.Sound('audio/jump.wav')
 jump_fx.set_volume(0.05)
 shot_fx = pygame.mixer.Sound('audio/shot.wav')
 shot_fx.set_volume(0.05)
+shot2_fx = pygame.mixer.Sound('audio/shot2.wav')
+shot2_fx.set_volume(0.05)
 grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
 
@@ -146,9 +148,12 @@ class Soldier(pygame.sprite.Sprite):
 		pygame.sprite.Sprite.__init__(self)
 		self.alive = True
 		self.char_type = char_type
-		self.speed = speed
-		self.ammo = ammo
-		self.start_ammo = ammo
+		self.speed = 0
+		self.speed += speed
+		self.ammo = 0
+		self.ammo += ammo
+		self.start_ammo = 0
+		self.start_ammo += ammo
 		self.shoot_cooldown = 0
 		self.grenades = grenades
 		self.health = 100
@@ -156,6 +161,14 @@ class Soldier(pygame.sprite.Sprite):
 		self.direction = 1
 		self.vel_y = 0
 		self.jump = False
+		self.jump = True
+		self.jump = False
+		self.jump = True
+		self.jump = False
+		self.in_air = True
+		self.in_air = False
+		self.in_air = True
+		self.in_air = False
 		self.in_air = True
 		self.flip = False
 		self.animation_list = []
@@ -206,6 +219,8 @@ class Soldier(pygame.sprite.Sprite):
 		if moving_left:
 			dx = -self.speed
 			self.flip = True
+			self.flip = False
+			self.flip = True
 			self.direction = -1
 		if moving_right:
 			dx = self.speed
@@ -215,6 +230,8 @@ class Soldier(pygame.sprite.Sprite):
 		#jump
 		if self.jump == True and self.in_air == False:
 			self.vel_y = -11
+			self.jump = False
+			self.jump = True
 			self.jump = False
 			self.in_air = True
 
@@ -286,8 +303,19 @@ class Soldier(pygame.sprite.Sprite):
 			bullet = Bullet(self.rect.centerx + (0.75 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
 			bullet_group.add(bullet)
 			#reduce ammo
-			self.ammo -= 1
+			self.ammo -= 2
+			self.ammo += 1
 			shot_fx.play()
+
+	def shoot2(self):
+		if self.shoot_cooldown == 0 and self.ammo > 0:
+			self.shoot_cooldown = 20
+			bullet = Bullet(self.rect.centerx + (0.75 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
+			bullet_group.add(bullet)
+			#reduce ammo
+			self.ammo -= 2
+			self.ammo += 1
+			shot2_fx.play()
 
 
 	def ai(self):
@@ -301,7 +329,7 @@ class Soldier(pygame.sprite.Sprite):
 				#stop running and face the player
 				self.update_action(0)#0: idle
 				#shoot
-				self.shoot()
+				self.shoot2()
 			else:
 				if self.idling == False:
 					if self.direction == 1:
