@@ -121,6 +121,14 @@ def reset_level():
 	decoration_group.empty()
 	water_group.empty()
 	exit_group.empty()
+	enemy_group.empty()
+	bullet_group.empty()
+	grenade_group.empty()
+	explosion_group.empty()
+	item_box_group.empty()
+	decoration_group.empty()
+	water_group.empty()
+	exit_group.empty()
 
 	#create empty tile list
 	data = []
