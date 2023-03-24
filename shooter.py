@@ -54,7 +54,7 @@ shot2_fx = pygame.mixer.Sound('audio/shot2.wav')
 shot2_fx.set_volume(0.05)
 grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
-grenade2_fx = pygame.mixer.Sound('audio/explosion.wav')
+grenade2_fx = pygame.mixer.Sound('audio/explosin.wav')
 grenade2_fx.set_volume(0.05)
 
 
