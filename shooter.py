@@ -52,6 +52,8 @@ shot_fx = pygame.mixer.Sound('audio/shot.wav')
 shot_fx.set_volume(0.05)
 shot2_fx = pygame.mixer.Sound('audio/shot2.wav')
 shot2_fx.set_volume(0.05)
+shot3_fx = pygame.mixer.Sound('audio/shot3.wav')
+shot3_fx.set_volume(0.05)
 grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
 grenade2_fx = pygame.mixer.Sound('audio/explosin.wav')
@@ -97,6 +99,8 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 PINK = (235, 65, 54)
+BLUE = (0, 255, 255)
+BROWN = (234, 221, 202)
 
 #define font
 font = pygame.font.SysFont('Futura', 30)
@@ -320,6 +324,16 @@ class Soldier(pygame.sprite.Sprite):
 			self.ammo += 1
 			shot2_fx.play()
 
+	def shoot3(self):
+		if self.shoot_cooldown == 0 and self.ammo > 0:
+			self.shoot_cooldown = 20
+			bullet = Bullet(self.rect.centerx + (0.75 * self.rect.size[0] * self.direction), self.rect.centery, self.direction)
+			bullet_group.add(bullet)
+			#reduce ammo
+			self.ammo -= 2
+			self.ammo += 1
+			shot3_fx.play()
+
 
 	def ai(self):
 		if self.alive and player.alive:
@@ -427,7 +441,7 @@ class World():
 					elif tile == 16:#create enemies
 						enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 1.65, 2, 20, 0)
 						enemy_group.add(enemy)
-					elif tile == 17:#create ammo box
+					elif tile == 17:#create ammo 0
 						item_box = ItemBox('Ammo', x * TILE_SIZE, y * TILE_SIZE)
 						item_box_group.add(item_box)
 					elif tile == 18:#create grenade box
@@ -439,6 +453,9 @@ class World():
 					elif tile == 20:#create exit
 						exit = Exit(img, x * TILE_SIZE, y * TILE_SIZE)
 						exit_group.add(exit)
+					elif tile ==21:#create upgrade box
+						item_box = ItemBox('Upgrade', x * TILE_SIZE, y * TILE_SIZE)
+						item_box_group.add(item_box)
 
 		return player, health_bar
 
