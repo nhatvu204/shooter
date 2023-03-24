@@ -32,6 +32,7 @@ bg_scroll = 0
 level = 1
 start_game = False
 start_intro = False
+pause_game = False
 
 
 #define player action variables
@@ -71,6 +72,7 @@ pine1_img = pygame.image.load('img/Background/pine1.png').convert_alpha()
 pine2_img = pygame.image.load('img/Background/pine2.png').convert_alpha()
 mountain_img = pygame.image.load('img/Background/mountain.png').convert_alpha()
 sky_img = pygame.image.load('img/Background/sky_cloud.png').convert_alpha()
+sky2_img = pygame.image.load('img/Background/sky_cloud2.jpg').convert_alpha()
 #store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
@@ -85,10 +87,12 @@ grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 health_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
 grenade_box_img = pygame.image.load('img/icons/grenade_box.png').convert_alpha()
+upgrade_box_img = pygame.image.load('img/icons/upgrade_box.png').convert_alpha()
 item_boxes = {
 	'Health'	: health_box_img,
 	'Ammo'		: ammo_box_img,
-	'Grenade'	: grenade_box_img
+	'Grenade'	: grenade_box_img,
+	'Upgrade'	: upgrade_box_img
 }
 
 
@@ -841,6 +845,7 @@ while run:
 		decoration_group.draw(screen)
 		water_group.draw(screen)
 		exit_group.draw(screen)
+		exit_group.update()
 
 		#show intro
 		if start_intro == True:
