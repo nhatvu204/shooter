@@ -54,6 +54,8 @@ shot2_fx = pygame.mixer.Sound('audio/shot2.wav')
 shot2_fx.set_volume(0.05)
 grenade_fx = pygame.mixer.Sound('audio/grenade.wav')
 grenade_fx.set_volume(0.05)
+grenade2_fx = pygame.mixer.Sound('audio/explosion.wav')
+grenade2_fx.set_volume(0.05)
 
 
 #load images
@@ -61,6 +63,7 @@ grenade_fx.set_volume(0.05)
 start_img = pygame.image.load('img/start_btn.png').convert_alpha()
 exit_img = pygame.image.load('img/exit_btn.png').convert_alpha()
 restart_img = pygame.image.load('img/restart_btn.png').convert_alpha()
+like_img = pygame.image.load('img/like_btn.png').convert_alpha()
 #background
 pine1_img = pygame.image.load('img/Background/pine1.png').convert_alpha()
 pine2_img = pygame.image.load('img/Background/pine2.png').convert_alpha()
@@ -612,6 +615,63 @@ class Grenade(pygame.sprite.Sprite):
 					abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
 					enemy.health -= 50
 
+class Grenade2(pygame.sprite.Sprite):
+	def __init__(self, x, y, direction):
+		pygame.sprite.Sprite.__init__(self)
+		self.timer = 100
+		self.vel_y = -11
+		self.speed = 7
+		self.image = grenade_img
+		self.rect = self.image.get_rect()
+		self.rect.center = (x, y)
+		self.width = self.image.get_width()
+		self.height = self.image.get_height()
+		self.direction = direction
+
+	def update(self):
+		self.vel_y += GRAVITY
+		dx = self.direction * self.speed
+		dy = self.vel_y
+
+		#check for collision with level
+		for tile in world.obstacle_list:
+			#check collision with walls
+			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+				self.direction *= -1
+				dx = self.direction * self.speed
+			#check for collision in the y direction
+			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+				self.speed = 0
+				#check if below the ground, i.e. thrown up
+				if self.vel_y < 0:
+					self.vel_y = 0
+					dy = tile[1].bottom - self.rect.top
+				#check if above the ground, i.e. falling
+				elif self.vel_y >= 0:
+					self.vel_y = 0
+					dy = tile[1].top - self.rect.bottom	
+
+
+		#update grenade position
+		self.rect.x += dx + screen_scroll
+		self.rect.y += dy
+
+		#countdown timer
+		self.timer -= 1
+		if self.timer <= 0:
+			self.kill()
+			grenade2_fx.play()
+			explosion = Explosion(self.rect.x, self.rect.y, 0.5)
+			explosion_group.add(explosion)
+			#do damage to anyone that is nearby
+			if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 3 and \
+				abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 3:
+				player.health -= 100
+			for enemy in enemy_group:
+				if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 3 and \
+					abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 3:
+					enemy.health -= 100
+
 
 
 class Explosion(pygame.sprite.Sprite):
@@ -680,6 +740,7 @@ death_fade = ScreenFade(2, PINK, 4)
 start_button = button.Button(SCREEN_WIDTH // 2 - 130, SCREEN_HEIGHT // 2 - 150, start_img, 1)
 exit_button = button.Button(SCREEN_WIDTH // 2 - 110, SCREEN_HEIGHT // 2 + 50, exit_img, 1)
 restart_button = button.Button(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, restart_img, 2)
+like_button = button.Button(SCREEN_WIDTH // 2 - 130, SCREEN_HEIGHT // 2 - 150, start_img, 1)
 
 #create sprite groups
 enemy_group = pygame.sprite.Group()
@@ -844,6 +905,19 @@ while run:
 				jump_fx.play()
 			if event.key == pygame.K_ESCAPE:
 				run = False
+			if event.key == pygame.K_LEFT:
+				moving_left = True
+			if event.key == pygame.K_RIGHT:
+				moving_right = True
+			if event.key == pygame.K_CAPSLOCK:
+				shoot = True
+			if event.key == pygame.K_LSHIFT:
+				grenade = True
+			if event.key == pygame.K_UP and player.alive:
+				player.jump = True
+				jump_fx.play()
+			if event.key == pygame.K_ESCAPE:
+				run = False
 
 
 		#keyboard button released
@@ -855,6 +929,15 @@ while run:
 			if event.key == pygame.K_SPACE:
 				shoot = False
 			if event.key == pygame.K_q:
+				grenade = False
+				grenade_thrown = False
+			if event.key == pygame.K_LEFT:
+				moving_left = False
+			if event.key == pygame.K_RIGHT:
+				moving_right = False
+			if event.key == pygame.K_CAPSLOCK:
+				shoot = False
+			if event.key == pygame.K_LSHIFT:
 				grenade = False
 				grenade_thrown = False
 
